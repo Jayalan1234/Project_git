@@ -1,62 +1,89 @@
 pipeline {
     agent any
+
     stages {
         stage('Build') {
             steps {
-                echo 'Building code...'
-                sh 'mvn clean package'
+                script {
+                    echo 'Build the code using a build automation tool (e.g., Maven)'
+                }
             }
         }
+
         stage('Unit and Integration Tests') {
             steps {
-                echo 'Running unit tests...'
-                sh 'mvn test'
-                echo 'Running integration tests...'
-                sh 'mvn verify'
+                script {
+                    echo 'Run unit and integration tests using test automation tools (e.g., JUnit, pytest)'
+                }
+            }
+            post {
+                always {
+                    mail to: "jayalan2225349@gmail.com",
+                         subject: "Unit and Integration Tests Stage Notification",
+                         body: "Successly send notification"
+                }
             }
         }
+
         stage('Code Analysis') {
             steps {
-                echo 'Analyzing code...'
-                sh 'sonar-scanner'
+                script {
+                    echo 'Analyze code quality using a code analysis tool (e.g., SonarQube)'
+                }
             }
         }
+
         stage('Security Scan') {
             steps {
-                echo 'Scanning for security vulnerabilities...'
-                sh 'snyk test'
+                script {
+                    echo 'Perform a security scan using a security scanning tool (e.g., OWASP Dependency-Check)'
+                    echo 'Additional security scan step or command'
+                }
+            }
+            post {
+                always {
+                    mail to: "jayalan2225349@gmail.com",
+                         subject: "Security Scan Stage Notification",
+                         body: "Successly send notification"
+                }
             }
         }
+
         stage('Deploy to Staging') {
             steps {
-                echo 'Deploying to staging...'
-                sh 'aws deploy ...'
+                script {
+                    echo 'Deploy the application to a staging server (e.g., AWS EC2) using deployment tools'
+                }
             }
         }
+
         stage('Integration Tests on Staging') {
             steps {
-                echo 'Running integration tests on staging...'
-                sh 'mvn verify -Pstaging'
+                script {
+                    echo 'Run integration tests in the staging environment using relevant testing tools'
+                }
             }
         }
+
         stage('Deploy to Production') {
             steps {
-                echo 'Deploying to production...'
-                sh 'aws deploy ...'
+                script {
+                    echo 'Deploy the application to a production server (e.g., AWS EC2) using deployment tools'
+                }
             }
         }
     }
+
     post {
         success {
-            mail to: 'jayalan2225349@example.com',
-                 subject: "Pipeline Success: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
-                 body: "The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} was successful.\n\nCheck the Jenkins job for more details."
+            mail to: "jayalan2225349@gmail.com",
+                 subject: "Pipeline Success Notification",
+                 body: "All stages are running successfully."
         }
         failure {
-            mail to: 'jayalan2225349@example.com',
-                 subject: "Pipeline Failure: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
-                 body: "The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} failed.\n\nCheck the Jenkins job for more details.",
-                 attachLog: true
+            mail to: "jayalan2225349@gmail.com",
+                 subject: "Pipeline Failure Notification",
+                 body: "The pipeline has failed. Please check the logs for details."
         }
     }
 }
