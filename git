@@ -1,1 +1,47 @@
+pipeline {
+    agent any
+    
+    environment{
+            
+    DIRECTORY_PATH='C:/ProgramData/Jenkins/.jenkins/workspace/pipeline_pro'
+    TESTING_ENVIRONMENT='pipeline_test'
+    PRODUCTION_ENVIRONMENT='pipeline_pro'
+    }
 
+    stages{
+        stage('Build'){
+            steps{
+                echo"fetch the source code from the directory path specified by the environment variable:${env.DIRECTORY_PATH}"
+                echo"complie the code and generate any nessary artifacts"
+            }
+        }
+        stage('Test'){
+            steps{
+                echo"Unit Tests"
+                echo"Integration Tests"
+            }
+        }
+        stage('Code'){
+            steps{
+                echo"Check the qualtiy of the code"
+            }
+        }
+        stage('Deploy'){
+            steps{
+                echo"Deploy the application to a testing enivronemnt specifies by the environment variable:${env.TESTING_ENVIRONMENT} "
+            }
+        }
+        stage('Approval'){
+            steps{
+                echo"Approving"
+                sleep(time:10,unit: 'SECONDS')
+            }
+        }
+        stage('Deploy to Production'){
+            steps{
+                echo"Deploying the production:${env.PRODUCTION_ENVIRONMENT}"
+            }
+        }
+    }
+    
+}
