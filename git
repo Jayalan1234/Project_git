@@ -1,47 +1,62 @@
 pipeline {
     agent any
-    
-    environment{
-            
-    DIRECTORY_PATH='C:/ProgramData/Jenkins/.jenkins/workspace/pipeline_pro'
-    TESTING_ENVIRONMENT='pipeline_test'
-    PRODUCTION_ENVIRONMENT='pipeline_pro'
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building code...'
+                sh 'mvn clean package'
+            }
+        }
+        stage('Unit and Integration Tests') {
+            steps {
+                echo 'Running unit tests...'
+                sh 'mvn test'
+                echo 'Running integration tests...'
+                sh 'mvn verify'
+            }
+        }
+        stage('Code Analysis') {
+            steps {
+                echo 'Analyzing code...'
+                sh 'sonar-scanner'
+            }
+        }
+        stage('Security Scan') {
+            steps {
+                echo 'Scanning for security vulnerabilities...'
+                sh 'snyk test'
+            }
+        }
+        stage('Deploy to Staging') {
+            steps {
+                echo 'Deploying to staging...'
+                sh 'aws deploy ...'
+            }
+        }
+        stage('Integration Tests on Staging') {
+            steps {
+                echo 'Running integration tests on staging...'
+                sh 'mvn verify -Pstaging'
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                echo 'Deploying to production...'
+                sh 'aws deploy ...'
+            }
+        }
     }
-
-    stages{
-        stage('Build'){
-            steps{
-                echo"fetch the source code from the directory path specified by the environment variable:${env.DIRECTORY_PATH}"
-                echo"complie the code and generate any nessary artifacts"
-            }
+    post {
+        success {
+            mail to: 'jayalan2225349@example.com',
+                 subject: "Pipeline Success: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
+                 body: "The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} was successful.\n\nCheck the Jenkins job for more details."
         }
-        stage('Test'){
-            steps{
-                echo"Unit Tests"
-                echo"Integration Tests"
-            }
-        }
-        stage('Code'){
-            steps{
-                echo"Check the qualtiy of the code"
-            }
-        }
-        stage('Deploy'){
-            steps{
-                echo"Deploy the application to a testing enivronemnt specifies by the environment variable:${env.TESTING_ENVIRONMENT} "
-            }
-        }
-        stage('Approval'){
-            steps{
-                echo"Approving"
-                sleep(time:10,unit: 'SECONDS')
-            }
-        }
-        stage('Deploy to Production'){
-            steps{
-                echo"Deploying the production:${env.PRODUCTION_ENVIRONMENT}"
-            }
+        failure {
+            mail to: 'jayalan2225349@example.com',
+                 subject: "Pipeline Failure: ${env.JOB_NAME} ${env.BUILD_NUMBER}",
+                 body: "The pipeline ${env.JOB_NAME} build #${env.BUILD_NUMBER} failed.\n\nCheck the Jenkins job for more details.",
+                 attachLog: true
         }
     }
-    
 }
