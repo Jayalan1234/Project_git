@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    echo 'By using tool (e.g., Maven) BUilding'
+                    echo 'Build the code using a build automation tool (e.g., Maven)'
                 }
             }
         }
@@ -13,7 +13,7 @@ pipeline {
         stage('Unit and Integration Tests') {
             steps {
                 script {
-                    echo 'By using test automation tools (e.g., JUnit, pytest) Running unit and integration tests '
+                    echo 'Run unit and integration tests using test automation tools (e.g., JUnit, pytest)'
                 }
             }
             post {
@@ -21,6 +21,7 @@ pipeline {
                     mail to: "jayalan2225349@gmail.com",
                          subject: "Unit and Integration Tests Stage Notification",
                          body: "Successly send notification"
+                         attachLog: true
                 }
             }
         }
@@ -28,7 +29,7 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 script {
-                    echo 'By using tool (e.g., SonarQube) analyze the code'
+                    echo 'Analyze code quality using a code analysis tool (e.g., SonarQube)'
                 }
             }
         }
@@ -36,7 +37,8 @@ pipeline {
         stage('Security Scan') {
             steps {
                 script {
-                    echo 'by using tool (e.g., OWASP Dependency-Check) security scan'
+                    echo 'Perform a security scan using a security scanning tool (e.g., OWASP Dependency-Check)'
+                    echo 'Additional security scan step or command'
                 }
             }
             post {
@@ -44,6 +46,7 @@ pipeline {
                     mail to: "jayalan2225349@gmail.com",
                          subject: "Security Scan Stage Notification",
                          body: "Successly send notification"
+                         attachLog: true
                 }
             }
         }
@@ -51,7 +54,7 @@ pipeline {
         stage('Deploy to Staging') {
             steps {
                 script {
-                    echo 'By using tools(e.g., AWS EC2) deploy '
+                    echo 'Deploy the application to a staging server (e.g., AWS EC2) using deployment tools'
                 }
             }
         }
@@ -59,7 +62,7 @@ pipeline {
         stage('Integration Tests on Staging') {
             steps {
                 script {
-                    echo 'Using tools performing test'
+                    echo 'Run integration tests in the staging environment using relevant testing tools'
                 }
             }
         }
@@ -67,7 +70,7 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 script {
-                    echo 'By using tools  (e.g., AWS EC2) peerform deploy to production'
+                    echo 'Deploy the application to a production server (e.g., AWS EC2) using deployment tools'
                 }
             }
         }
@@ -78,11 +81,13 @@ pipeline {
             mail to: "jayalan2225349@gmail.com",
                  subject: "Pipeline Success Notification",
                  body: "All stages are running successfully."
+                 attachLog: true
         }
         failure {
             mail to: "jayalan2225349@gmail.com",
                  subject: "Pipeline Failure Notification",
-                 body: "Notification is unsuccessful"
+                 body: "The pipeline has failed. Please check the logs for details."
+                 attachLog: true
         }
     }
 }
